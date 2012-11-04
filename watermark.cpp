@@ -1,4 +1,4 @@
-#include <QImage>
+#include <QPixmap>
 #include <QPainter>
 #include <QFile>
 #include <QDir>
@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QSettings>
+#include <QColorDialog>
 
 #include "watermark.h"
 #include "ui_watermark.h"
@@ -29,7 +30,7 @@ WaterMark::WaterMark(QWidget *parent) :
     ui->setupUi(this);
 
     // fill size combos
-    for (int size=40; size<210; size+=10) {
+    for (int size=40; size<310; size+=10) {
         ui->cmbSize->addItem(tr("%1").arg(size), size);
     }
     //ui->cmbSize->addItem(tr("11"), 11);
@@ -61,7 +62,7 @@ WaterMark::WaterMark(QWidget *parent) :
     ui->cmbSize->setCurrentIndex(index);
     index = ui->cmbFont->findText(settings.value("font").toString());
     ui->cmbFont->setCurrentIndex(index);
-
+    ui->spbWeight->setValue(settings.value("weight", 75).toInt());
 }
 
 WaterMark::~WaterMark()
@@ -97,9 +98,22 @@ void WaterMark::on_btnBrowseOut_clicked()
     }
 }
 
+void WaterMark::on_btnBrowseInDir_clicked()
+{
+#if 0
+    QColor c = QColorDialog::getColor(Qt::white, this,
+                                      tr("Select Colour"),
+                                      QColorDialog::ShowAlphaChannel);
+    //setBackgroundRole();
+    QString sColour = c.name(); //tr("#%1%2%3%4").arg(c.red()).arg(c.green()).arg(c.blue()).arg(c.alpha());
+    ui->txtInDir->setText(sColour);
+    ui->lblPicture->setStyleSheet(tr("QLabel { background-color :%1 }").arg(c.name()));
+#endif
+}
+
 void WaterMark::on_btnConvert_clicked()
 {
-    QImage resultImage;
+    QPixmap resultImage;
     QPainter painter;
     QFont font;
 
@@ -130,6 +144,8 @@ void WaterMark::on_btnConvert_clicked()
     ui->groupBox->setEnabled(false);
     ui->groupBox_2->setEnabled(false);
     ui->groupBox_3->setEnabled(false);
+
+    int weight = ui->spbWeight->value();
 
     // load input image
     resultImage.load(ui->txtInFile->text());
@@ -198,7 +214,7 @@ void WaterMark::on_btnConvert_clicked()
         painter.setBackgroundMode(Qt::OpaqueMode);
 
         // Set pen to white with transparent
-        painter.setPen(QColor(255,255,255,75));
+        painter.setPen(QColor(255,255,255,weight));
         painter.setBackground(QBrush(Qt::transparent));
 
         // set font
@@ -216,12 +232,15 @@ void WaterMark::on_btnConvert_clicked()
                               tr("Failed to save new image...."));
     }
 
+    ui->lblPicture->setPixmap(resultImage.scaled(500, 500, Qt::KeepAspectRatio));
+
     // save settings
     QSettings settings;
     settings.setValue("watermark", ui->txtWatermark->text());
     settings.setValue("location", pos);
     settings.setValue("size", size);
     settings.setValue("font", ui->cmbFont->currentText());
+    settings.setValue("weight", weight);
 
     // enable controls
     ui->groupBox->setEnabled(true);

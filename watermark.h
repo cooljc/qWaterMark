@@ -19,6 +19,7 @@ private slots:
     void on_btnBrowseIn_clicked();
     void on_btnBrowseOut_clicked();
     void on_btnConvert_clicked();
+    void on_btnBrowseInDir_clicked();
 private:
     Ui::WaterMark *ui;
 };
