@@ -29,7 +29,7 @@ WaterMark::WaterMark(QWidget *parent) :
     ui->setupUi(this);
 
     // fill size combos
-    for (int size=40; size<90; size+=10) {
+    for (int size=40; size<210; size+=10) {
         ui->cmbSize->addItem(tr("%1").arg(size), size);
     }
     //ui->cmbSize->addItem(tr("11"), 11);
@@ -78,6 +78,8 @@ void WaterMark::on_btnBrowseIn_clicked()
                                         tr("Images (*.png *.xpm *.jpg)"));
     if (!file.isEmpty()) {
         ui->txtInFile->setText(file);
+        QString new_filename = file.mid(0, (file.length()-4)) + ".watermark.jpg";
+        ui->txtOutFile->setText(new_filename);
         settings.setValue("inpath", file);
     }
 }
