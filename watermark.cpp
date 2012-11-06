@@ -1,3 +1,25 @@
+/*
+ * watermark.cpp
+ *
+ * Copyright 2012 Jon Cross <joncross.cooljc@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ *
+ */
 #include <QPixmap>
 #include <QPainter>
 #include <QFile>
@@ -33,10 +55,6 @@ WaterMark::WaterMark(QWidget *parent) :
     for (int size=40; size<310; size+=10) {
         ui->cmbSize->addItem(tr("%1").arg(size), size);
     }
-    //ui->cmbSize->addItem(tr("11"), 11);
-    //ui->cmbSize->addItem(tr("12"), 12);
-    //ui->cmbSize->addItem(tr("13"), 13);
-    //ui->cmbSize->addItem(tr("14"), 14);
 
     // fill location combos
     ui->cmbLocation->addItem(tr("Centre"), TEXT_CENTRE);
@@ -79,8 +97,10 @@ void WaterMark::on_btnBrowseIn_clicked()
                                         tr("Images (*.png *.xpm *.jpg)"));
     if (!file.isEmpty()) {
         ui->txtInFile->setText(file);
-        QString new_filename = file.mid(0, (file.length()-4)) + ".watermark.jpg";
+        // Autogenerate out file
+        QString new_filename = file.mid(0, (file.length()-4)) + ".wm.jpg";
         ui->txtOutFile->setText(new_filename);
+        // save infile path
         settings.setValue("inpath", file);
     }
 }
